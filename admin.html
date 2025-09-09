@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>逗留邮箱管理平台</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', 'PingFang SC', Arial, sans-serif;
+            background: #f4f6fb;
+            min-height: 100vh;
+        }
+        .layout {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+        }
+        .sidebar {
+            width: 140px;
+            min-width: 120px;
+            max-width: 180px;
+            background: rgba(255,255,255,0.85);
+            box-shadow: 2px 0 16px 0 rgba(60,80,120,0.08);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-right: 1px solid #e3e8ee;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0;
+            height: 100vh;
+        }
+        .sidebar-title {
+            color: #1976d2;
+            font-size: 15px;
+            font-weight: 700;
+            margin: 22px 0 18px 0;
+            letter-spacing: 1px;
+            font-family: 'Roboto', 'PingFang SC', Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+        }
+        .sidebar-title img {
+            width: 36px;
+            height: 36px;
+            margin-bottom: 8px;
+        }
+        .sidebar-title span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+            text-align: center;
+            max-width: 100%;
+        }
+        .menu {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+        }
+        .menu-item {
+            font-size: 12px;
+            color: #374151;
+            padding: 0;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+            user-select: none;
+            border-radius: 6px;
+            font-weight: 500;
+            font-family: 'Roboto', 'PingFang SC', Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 54px;
+            width: 100%;
+            justify-content: center;
+        }
+        .menu-item i {
+            margin: 0 0 4px 0;
+            font-size: 20px;
+            color: #90caf9;
+            transition: color 0.2s;
+        }
+        .menu-item:hover, .menu-item.active {
+            color: #1976d2;
+            background: #e3f2fd;
+            box-shadow: 0 2px 8px rgba(25,118,210,0.08);
+        }
+        .menu-item:hover i, .menu-item.active i {
+            color: #1976d2;
+        }
+        .main {
+            flex: 1;
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 0 18px 18px 0;
+            margin: 0;
+            box-shadow: 0 4px 24px 0 rgba(60,80,120,0.10);
+            height: 100vh;
+            overflow: auto;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .main-iframe {
+            border: none;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+        }
+        @media (max-width: 900px) {
+            .sidebar { width: 100px; min-width: 60px; }
+            .menu-item { font-size: 13px; padding-left: 8px; height: 32px; }
+            .sidebar-title { font-size: 13px; margin-left: 8px; margin-bottom: 10px; }
+            .sidebar-title img { width: 16px; height: 16px; margin-right: 4px; }
+            .main { border-radius: 0 8px 8px 0; }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
+</head>
+<body>
+<div class="layout">
+    <div class="sidebar">
+        <div class="sidebar-title">
+            <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4e7.png" alt="logo">
+            <span>逗留邮箱管理平台</span>
+        </div>
+        <div class="menu">
+            <div class="menu-item active"><i class="fas fa-home"></i>首页</div>
+            <div class="menu-item"><i class="fas fa-envelope"></i>邮箱管理</div>
+            <div class="menu-item"><i class="fas fa-key"></i>卡密管理</div>
+            <div class="menu-item"><i class="fas fa-network-wired"></i>代理池</div>
+            <div class="menu-item"><i class="fas fa-file-alt"></i>收件日志</div>
+            <div class="menu-item"><i class="fas fa-file-code"></i>卡密日志</div>
+            <div class="menu-item"><i class="fas fa-cog"></i>系统设置</div>
+        </div>
+    </div>
+    <div class="main" id="mainContent">
+        <!-- 右侧内容区域，后续可根据菜单切换内容 -->
+    </div>
+</div>
+<script>
+const menuItems = document.querySelectorAll('.menu-item');
+const mainContent = document.getElementById('mainContent');
+function loadPage(page) {
+    mainContent.innerHTML = `<iframe src="xuanxiang/${page}" class="main-iframe"></iframe>`;
+}
+menuItems.forEach(item => {
+    item.onclick = function() {
+        menuItems.forEach(i=>i.classList.remove('active'));
+        this.classList.add('active');
+        if (this.innerText.indexOf('首页') !== -1) {
+            loadPage('home.html');
+        } else if (this.innerText.indexOf('邮箱管理') !== -1) {
+            loadPage('mailbox.html');
+        } else if (this.innerText.indexOf('卡密管理') !== -1) {
+            loadPage('kami.html');
+        } else if (this.innerText.indexOf('代理池') !== -1) {
+            loadPage('daili.html');
+        } else if (this.innerText.indexOf('收件日志') !== -1) {
+            loadPage('shoujian.html');
+        } else if (this.innerText.indexOf('卡密日志') !== -1) {
+            loadPage('kamirizhi.html');
+        } else if (this.innerText.indexOf('系统设置') !== -1) {
+            loadPage('system.html');
+        } else {
+            mainContent.innerHTML = '';
+        }
+    };
+});
+// 默认加载首页
+if (document.querySelector('.menu-item.active').innerText.indexOf('首页') !== -1) {
+    loadPage('home.html');
+}
+</script>
+</body>
+</html>

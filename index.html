@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>邮箱收件展示</title>
+    <style>
+        body {
+            background: linear-gradient(120deg, #e8f5e9 0%, #b2dfdb 100%);
+            color: #2e4a36;
+            font-family: 'Segoe UI', 'PingFang SC', Arial, sans-serif;
+            transition: background 0.5s;
+        }
+        .container {
+            width: 400px;
+            margin: 48px auto;
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 28px 28px 18px 28px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px #b2dfdb55;
+            position: relative;
+            transition: background 0.5s, box-shadow 0.5s;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.2em;
+            margin-bottom: 32px;
+            letter-spacing: 2px;
+            color: #388e3c;
+            text-shadow: 0 2px 8px #b2dfdb44;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 32px;
+            align-items: center;
+        }
+        label {
+            font-size: 1.08em;
+            margin-bottom: 4px;
+            font-weight: 500;
+            color: #388e3c;
+        }
+        input[type="text"] {
+            width: 100%;
+            max-width: 320px;
+            box-sizing: border-box;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1.5px solid #b2dfdb;
+            font-size: 1.05em;
+            background: #e8f5e9;
+            transition: border 0.3s;
+        }
+        input[type="text"]:focus {
+            border: 1.5px solid #388e3c;
+            outline: none;
+        }
+        button {
+            padding: 12px 28px;
+            border-radius: 8px;
+            border: none;
+            background: linear-gradient(90deg, #388e3c 0%, #b2dfdb 100%);
+            color: #fff;
+            font-size: 1.08em;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 8px #388e3c33;
+            transition: background 0.3s, box-shadow 0.3s;
+            width: 100%;
+            max-width: 320px;
+            box-sizing: border-box;
+        }
+        button:hover {
+            background: linear-gradient(90deg, #b2dfdb 0%, #388e3c 100%);
+            box-shadow: 0 4px 16px #388e3c44;
+        }
+        .mail-content {
+            background: rgba(232,245,233,0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 16px;
+            box-shadow: 0 2px 12px #b2dfdb22;
+            padding: 32px 36px;
+            min-height: 400px;
+            max-height: 800px;
+            width: 1200px;
+            margin: 40px auto 0 auto;
+            font-size: 1.16em;
+            overflow-y: auto;
+            overflow-x: hidden;
+            transition: background 0.5s, box-shadow 0.5s;
+        }
+        .mail-row { margin-bottom: 18px; }
+        .mail-label { font-weight: bold; margin-right: 8px; color: #388e3c; }
+        .mail-body { white-space: pre-wrap; word-break: break-all; background: #c8e6c9; border-radius: 8px; padding: 12px; margin-top: 6px; font-size: 1.08em; }
+        @media (max-width: 1000px) {
+            .mail-content { width: 98vw; padding: 4vw 2vw; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>逗留的收件服务</h1>
+    <div class="input-group">
+        <label for="emailInput">输入邮箱账号：</label>
+        <input type="text" id="emailInput" placeholder="请输入邮箱账号">
+        <button onclick="queryLatestMail()">获取最新邮件</button>
+    </div>
+</div>
+<div class="mail-content" id="mailContent">
+    <div style="text-align:center;color:#aaa;">邮件内容将在此显示</div>
+</div>
+<script>
+function queryLatestMail() {
+    let email = document.getElementById('emailInput').value.trim();
+    if (!email) {
+        alert('请输入邮箱账号');
+        return;
+    }
+    fetch('api.php?action=get_latest_mail&email=' + encodeURIComponent(email)).then(r=>r.json()).then(d=>{
+        let mc = document.getElementById('mailContent');
+        if (!d.success) {
+            mc.innerHTML = `<div style='color:#e74c3c;text-align:center;font-size:1.2em;'>此账号不存在</div>`;
+            return;
+        }
+        let m = d.data;
+        mc.innerHTML = `<div class='mail-row'><span class='mail-label'>时间：</span>${m.received_at||''}</div>
+            <div class='mail-row'><span class='mail-label'>邮件主题：</span>${m.subject||''}</div>
+            <div class='mail-row'><span class='mail-label'>发件人：</span>${m.sender||''}</div>
+            <div class='mail-row'><span class='mail-label'>邮件正文：</span><div class='mail-body'>${m.content||''}</div></div>`;
+    });
+}
+</script>
+</body>
+</html>
