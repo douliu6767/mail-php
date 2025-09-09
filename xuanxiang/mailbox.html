@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>邮箱管理</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: transparent; margin: 0; }
+        .container { padding: 24px; }
+        h2 { font-size: 22px; color: #1976d2; margin-bottom: 18px; }
+        .form-row { display: flex; gap: 12px; margin-bottom: 18px; }
+        input { padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
+        button { padding: 8px 18px; background: #1976d2; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 15px; }
+        button:hover { background: #1565c0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+        th, td { border: 1px solid #e3e8ee; padding: 8px; text-align: center; font-size: 14px; }
+        th { background: #e3f2fd; color: #1976d2; }
+        .del-btn { background: #e53935; color: #fff; border: none; border-radius: 4px; padding: 4px 10px; cursor: pointer; }
+        .del-btn:hover { background: #b71c1c; }
+        .msg { color: #e53935; margin-top: 8px; }
+        #addModal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.25); z-index: 99; align-items: center; justify-content: center; }
+        #addModal > div { background: rgba(255,255,255,0.7); backdrop-filter: blur(12px); padding: 32px 24px; border-radius: 10px; box-shadow: 0 4px 24px rgba(60,80,120,0.18); min-width: 320px; max-width: 90vw; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>邮箱管理</h2>
+    <button id="showAddBtn" style="padding:8px 18px;background:#1976d2;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:15px;">添加邮箱</button>
+    <div id="addModal">
+        <div>
+            <h3 style="margin-top:0;color:#1976d2;">添加邮箱</h3>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+                <input type="text" id="server" placeholder="服务器地址">
+                <select id="protocol" onchange="updatePort()" style="padding:8px;border-radius:6px;font-size:15px;">
+                    <option value="imap">IMAP</option>
+                    <option value="pop3">POP3</option>
+                </select>
+                <input type="text" id="email" placeholder="邮箱账号">
+                <input type="password" id="mailpwd" placeholder="邮箱密码">
+                <input type="number" id="port" placeholder="端口">
+                <label style="font-size:15px;display:flex;align-items:center;gap:8px;">
+                    <input type="checkbox" id="ssl" onchange="updatePort()">SSL安全连接
+                </label>
+                <input type="text" id="desc" placeholder="备注">
+            </div>
+            <div style="margin-top:18px;display:flex;gap:12px;">
+                <button onclick="addMailbox()" style="padding:8px 18px;background:#1976d2;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:15px;">确定添加</button>
+                <button onclick="closeModal()" style="padding:8px 18px;background:#eee;color:#333;border:none;border-radius:6px;cursor:pointer;font-size:15px;">取消</button>
+            </div>
+            <div class="msg" id="msg"></div>
+        </div>
+    </div>
+    <table id="mailboxTable">
+        <thead>
+            <tr>
+                <th>序号</th>
+                <th>账号</th>
+                <th>密码</th>
+                <th>服务器地址</th>
+                <th>协议</th>
+                <th>端口</th>
+                <th>SSL状态</th>
+                <th>备注</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+<script>
+function showModal() {
+    document.getElementById('addModal').style.display = 'flex';
+    document.getElementById('protocol').value = 'imap';
+    document.getElementById('ssl').checked = true;
+    updatePort();
+}
+function closeModal() {
+    document.getElementById('addModal').style.display = 'none';
+    document.getElementById('msg').innerText = '';
+    document.getElementById('server').value = '';
+    document.getElementById('email').value = '';
+    document.getElementById('mailpwd').value = '';
+    document.getElementById('desc').value = '';
+    document.getElementById('port').value = '';
+    document.getElementById('ssl').checked = false;
+}
+function updatePort() {
+    var protocol = document.getElementById('protocol').value;
+    var ssl = document.getElementById('ssl').checked;
+    var portInput = document.getElementById('port');
+    if(protocol === 'imap') {
+        portInput.value = ssl ? 993 : 143;
+    } else {
+        portInput.value = ssl ? 995 : 110;
+    }
+}
+document.getElementById('showAddBtn').onclick = showModal;
+function loadMailboxes() {
+    fetch('api.php?action=list_mailboxes').then(r=>r.json()).then(d=>{
+        let tb = document.querySelector('#mailboxTable tbody');
+        tb.innerHTML = '';
+        if (!d.success) return;
+        d.data.forEach((m, idx) => {
+            tb.innerHTML += `<tr>
+                <td>${idx+1}</td>
+                <td>${m.email}</td>
+                <td>${m.password||''}</td>
+                <td>${m.server||''}</td>
+                <td>${m.protocol||''}</td>
+                <td>${m.port||''}</td>
+                <td>${m.ssl==1?'✔️':'❌'}</td>
+                <td>${m.description||''}</td>
+                <td><button class='del-btn' onclick='delMailbox(${m.id})'>删除</button></td>
+            </tr>`;
+        });
+    });
+}
+function addMailbox() {
+    let server = document.getElementById('server').value;
+    let protocol = document.getElementById('protocol').value;
+    let email = document.getElementById('email').value;
+    let pwd = document.getElementById('mailpwd').value;
+    let port = document.getElementById('port').value;
+    let ssl = document.getElementById('ssl').checked ? 1 : 0;
+    let desc = document.getElementById('desc').value;
+    fetch('api.php?action=add_mailbox', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: `server=${encodeURIComponent(server)}&protocol=${protocol}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(pwd)}&port=${port}&ssl=${ssl}&description=${encodeURIComponent(desc)}`
+    }).then(r=>r.json()).then(d=>{
+        if (d.success) {
+            loadMailboxes();
+            closeModal();
+        } else {
+            document.getElementById('msg').innerText = d.msg||'添加失败';
+        }
+    });
+}
+function delMailbox(id) {
+    if (!confirm('确定删除该邮箱？')) return;
+    fetch('api.php?action=delete_mailbox', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: `id=${id}`
+    }).then(r=>r.json()).then(d=>{
+        if (d.success) loadMailboxes();
+        else alert(d.msg||'删除失败');
+    });
+}
+loadMailboxes();
+</script>
+</body>
+</html>
