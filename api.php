@@ -74,19 +74,21 @@ if ($action == 'get_latest_mail') {
     }
     json(['success'=>true, 'data'=>$mail]);
 }
-json(['success'=>false, 'msg'=>'未知操作']);
-?>
-$db = new SQLite3('data.db');
-// 创建用户表
-$db->exec("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password TEXT)");
-// 创建邮箱表
-$db->exec("CREATE TABLE IF NOT EXISTS mailboxes (id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT UNIQUE, password TEXT, description TEXT, server TEXT, protocol TEXT, port INTEGER, ssl INTEGER)");
-// 创建邮件表
-$db->exec("CREATE TABLE IF NOT EXISTS mails (id INTEGER PRIMARY KEY AUTOINCREMENT, mailbox_id INTEGER, subject TEXT, sender TEXT, content TEXT, received_at TEXT, FOREIGN KEY(mailbox_id) REFERENCES mailboxes(id))");
-// 初始化管理员账号
-$admin = $db->querySingle("SELECT * FROM users WHERE username='admin'");
-if (!$admin) {
-    $db->exec("INSERT INTO users (username, password) VALUES ('admin', 'admin123')");
+// 修改管理员密码
+if ($action == 'change_admin_password') {
+    if (!isset($_SESSION['user'])) json(['success'=>false, 'msg'=>'未登录']);
+    $old_password = $_POST['old_password'] ?? '';
+    $new_password = $_POST['new_password'] ?? '';
+    
+    // 验证当前密码
+    $current_user = $db->querySingle("SELECT * FROM users WHERE username='{$_SESSION['user']}' AND password='$old_password'", true);
+    if (!$current_user) {
+        json(['success'=>false, 'msg'=>'当前密码错误']);
+    }
+    
+    // 更新密码
+    $db->exec("UPDATE users SET password='$new_password' WHERE username='{$_SESSION['user']}'");
+    json(['success'=>true, 'msg'=>'密码修改成功']);
 }
-echo "数据库初始化完成，默认账号：admin，密码：admin123";
+json(['success'=>false, 'msg'=>'未知操作']);
 ?>
