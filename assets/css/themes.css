@@ -1,0 +1,213 @@
+/* 主题系统 - 明亮/暗黑模式 */
+
+/* 暗黑模式样式 */
+body.dark-mode {
+    background: linear-gradient(135deg, #232526 0%, #414345 40%, #434343 70%, #232526 100%);
+    color: #e0e0e0;
+}
+
+body.dark-mode .container {
+    color: #e0e0e0;
+}
+
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3 {
+    color: #90caf9;
+}
+
+body.dark-mode .btn-primary {
+    background: #1565c0;
+}
+
+body.dark-mode .btn-primary:hover {
+    background: #0d47a1;
+}
+
+body.dark-mode .form-input {
+    background: rgba(40, 40, 40, 0.8);
+    border-color: rgba(80, 80, 80, 0.5);
+    color: #e0e0e0;
+}
+
+body.dark-mode .form-input:focus {
+    background: rgba(50, 50, 50, 0.9);
+    border-color: #90caf9;
+}
+
+body.dark-mode .form-input::placeholder {
+    color: #90a4ae;
+}
+
+body.dark-mode .table {
+    background: rgba(40, 40, 40, 0.9);
+    color: #e0e0e0;
+}
+
+body.dark-mode .table th {
+    background: rgba(30, 30, 30, 0.9);
+    color: #90caf9;
+}
+
+body.dark-mode .table td {
+    border-bottom-color: rgba(80, 80, 80, 0.3);
+}
+
+body.dark-mode .table tbody tr:hover {
+    background: rgba(90, 202, 249, 0.1);
+}
+
+body.dark-mode .modal {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+body.dark-mode .modal-content {
+    background: rgba(40, 40, 40, 0.95);
+    color: #e0e0e0;
+}
+
+body.dark-mode .msg-error {
+    background: rgba(183, 28, 28, 0.2);
+    color: #ef5350;
+    border-color: rgba(183, 28, 28, 0.3);
+}
+
+body.dark-mode .msg-success {
+    background: rgba(46, 125, 50, 0.2);
+    color: #66bb6a;
+    border-color: rgba(46, 125, 50, 0.3);
+}
+
+body.dark-mode .msg-info {
+    background: rgba(21, 101, 192, 0.2);
+    color: #90caf9;
+    border-color: rgba(21, 101, 192, 0.3);
+}
+
+/* 主题切换按钮 */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: none;
+    border-radius: 20px;
+    color: #1976d2;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    z-index: 1001;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+.theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+body.dark-mode .theme-toggle {
+    background: rgba(40, 40, 40, 0.4);
+    color: #90caf9;
+}
+
+body.dark-mode .theme-toggle:hover {
+    background: rgba(40, 40, 40, 0.6);
+}
+
+/* 侧边栏暗黑模式样式 */
+body.dark-mode .sidebar {
+    background: rgba(30, 30, 30, 0.9);
+}
+
+body.dark-mode .sidebar-title {
+    color: #90caf9;
+}
+
+body.dark-mode .menu-item {
+    color: #b0bec5;
+}
+
+body.dark-mode .menu-item:hover,
+body.dark-mode .menu-item.active {
+    background: rgba(90, 202, 249, 0.15);
+    color: #90caf9;
+}
+
+body.dark-mode .menu-item i {
+    color: #64b5f6;
+}
+
+body.dark-mode .menu-item:hover i,
+body.dark-mode .menu-item.active i {
+    color: #90caf9;
+}
+
+body.dark-mode .main {
+    background: rgba(40, 40, 40, 0.9);
+}
+
+/* 为 iframe 内容适配暗黑模式 */
+body.dark-mode .main-iframe {
+    filter: brightness(0.9) contrast(1.1);
+}
+
+/* 登录页面特殊样式（保持原有样式） */
+.login-container {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+}
+
+body.dark-mode .login-container {
+    background: rgba(30, 30, 30, 0.35);
+    color: #eee;
+    border: 1.5px solid rgba(80, 80, 80, 0.28);
+    box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.15);
+}
+
+body.dark-mode .login-container .form-input {
+    background: rgba(40, 40, 40, 0.7);
+    color: #eee;
+    border-color: rgba(80, 80, 80, 0.5);
+}
+
+body.dark-mode .login-container .form-input:focus {
+    border-color: #90caf9;
+    background: rgba(50, 50, 50, 0.8);
+}
+
+/* 邮件展示页面特殊样式 */
+.mail-content {
+    background: rgba(232, 245, 233, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(178, 223, 219, 0.2);
+}
+
+body.dark-mode .mail-content {
+    background: rgba(40, 40, 40, 0.8);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+.mail-label {
+    font-weight: bold;
+    color: #388e3c;
+}
+
+body.dark-mode .mail-label {
+    color: #81c784;
+}
+
+.mail-body {
+    background: #c8e6c9;
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 6px;
+}
+
+body.dark-mode .mail-body {
+    background: rgba(60, 60, 60, 0.8);
+    color: #e0e0e0;
+}
